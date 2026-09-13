@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const nombres = [
   "Carlos",
@@ -18,6 +21,13 @@ const nombre = nombres[Math.floor(Math.random() * nombres.length)];
 
 const mostrarSaldo = ref(true);
 const menuAbierto = ref(false);
+
+const cerrarSesion = () => {
+  menuAbierto.value = false;
+  localStorage.clear();
+  sessionStorage.clear();
+  router.push('/');
+};
 
 const movimientos = [
   {
@@ -51,28 +61,42 @@ const movimientos = [
   <div class="min-h-screen bg-slate-100 pb-20 text-slate-800 lg:pb-0">
     <!-- Barra superior -->
     <header
-      class="relative top-0 z-40 flex items-center justify-between px-4 py-4"
+      class="sticky top-0 z-40 border-b border-slate-200 bg-slate-50/90 backdrop-blur-sm"
     >
-      <h1 class="text-xl font-bold text-blue-700 sm:text-2xl">
-        Sentinel
-      </h1>
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <h1 class="text-xl font-black text-blue-700 sm:text-2xl">
+          Capital <span class="text-red-700">One</span> <span class="text-sm">Bank</span>
+        </h1>
 
-      <div
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-bold text-white"
-      >
-        {{ nombre.charAt(0) }}
+        <div class="relative z-50">
+          <button
+            type="button"
+            @click="menuAbierto = !menuAbierto"
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 font-bold text-white shadow-md transition hover:scale-105"
+            aria-label="Abrir menú de usuario"
+          >
+            {{ nombre.charAt(0) }}
+          </button>
+
+          <div
+            v-if="menuAbierto"
+            class="absolute right-0 top-12 z-[60] w-44 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
+          >
+            <button
+              type="button"
+              @click="cerrarSesion"
+              class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              <span>Salir</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
-    <!-- Fondo del menú móvil -->
-    <div
-      v-if="menuAbierto"
-      @click="menuAbierto = false"
-      class="fixed inset-0 z-40 bg-black/40 lg:hidden"
-    ></div>
-
     <!-- Contenido -->
-    <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+    <main class="mx-auto max-w-6xl min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
       <!-- Bienvenida -->
       <section class="mb-6 sm:mb-8">
         <p class="text-sm text-slate-500">
@@ -100,7 +124,7 @@ const movimientos = [
       >
         <!-- Saldo -->
         <div
-          class="rounded-2xl bg-blue-600 p-5 text-white shadow-lg sm:p-6"
+          class="rounded-[28px] bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-5 text-white shadow-xl shadow-blue-900/15 sm:p-6"
         >
           <div class="flex items-center justify-between gap-2">
             <p class="text-sm text-blue-100">
@@ -109,14 +133,14 @@ const movimientos = [
 
             <button
               @click="mostrarSaldo = !mostrarSaldo"
-              class="rounded-lg bg-blue-500 px-2 py-1 text-xs hover:bg-blue-400 sm:px-3 sm:text-sm"
+              class="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-white ring-1 ring-white/20 transition hover:bg-white/20 sm:px-3 sm:text-sm"
             >
               {{ mostrarSaldo ? "Ocultar" : "Mostrar" }}
             </button>
           </div>
 
           <h3
-            class="mt-4 break-all text-3xl font-bold sm:text-4xl"
+            class="mt-4 break-all text-3xl font-black tracking-tight sm:text-4xl"
           >
             {{ mostrarSaldo ? "$0.00" : "••••••••" }}
           </h3>
@@ -125,7 +149,7 @@ const movimientos = [
             Cuenta de débito •••• 4582
           </p>
 
-          <div class="mt-6 flex justify-between text-sm">
+          <div class="mt-6 flex justify-between rounded-2xl bg-white/10 p-3 text-sm backdrop-blur-sm">
             <span>Cuenta principal</span>
             <span>MXN</span>
           </div>
@@ -133,7 +157,7 @@ const movimientos = [
 
         <!-- Acciones rápidas -->
         <div
-          class="rounded-2xl bg-white p-5 shadow-sm sm:p-6"
+          class="rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6"
         >
           <h3
             class="mb-6 text-lg font-bold text-slate-900 sm:text-xl"
@@ -144,7 +168,7 @@ const movimientos = [
           <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <!-- Transferir -->
             <button
-              class="rounded-xl bg-blue-50 p-4 text-blue-700 hover:bg-blue-100"
+              class="rounded-2xl bg-blue-50 p-4 text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100"
             >
               <span class="block text-2xl">💸</span>
 
@@ -157,7 +181,7 @@ const movimientos = [
 
             <!-- Pagar -->
             <button
-              class="rounded-xl bg-purple-50 p-4 text-purple-700 hover:bg-purple-100"
+              class="rounded-2xl bg-purple-50 p-4 text-purple-700 transition hover:-translate-y-0.5 hover:bg-purple-100"
             >
               <span class="block text-2xl">💳</span>
 
@@ -170,7 +194,7 @@ const movimientos = [
 
             <!-- Depositar -->
             <button
-              class="rounded-xl bg-emerald-50 p-4 text-emerald-700 hover:bg-emerald-100"
+              class="rounded-2xl bg-emerald-50 p-4 text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-100"
             >
               <span class="block text-2xl">📥</span>
 
@@ -183,7 +207,7 @@ const movimientos = [
 
             <!-- Estadísticas -->
             <button
-              class="rounded-xl bg-orange-50 p-4 text-orange-700 hover:bg-orange-100"
+              class="rounded-2xl bg-orange-50 p-4 text-orange-700 transition hover:-translate-y-0.5 hover:bg-orange-100"
             >
               <span class="block text-2xl">📊</span>
 
@@ -202,7 +226,7 @@ const movimientos = [
         class="mt-6 grid gap-4 sm:mt-8 sm:gap-6 xl:grid-cols-3"
       >
         <div
-          class="min-w-0 rounded-2xl bg-white p-5 shadow-sm sm:p-6 xl:col-span-2"
+          class="min-w-0 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6 xl:col-span-2"
         >
           <div
             class="mb-6 flex items-center justify-between gap-3"
@@ -214,29 +238,29 @@ const movimientos = [
             </h3>
 
             <button
-              class="shrink-0 text-sm font-semibold text-blue-600"
+              class="shrink-0 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
               @click="$router.push('/movimientos')"
             >
               Ver todos
             </button>
           </div>
 
-          <div class="space-y-5">
+          <div class="space-y-4">
             <div
               v-for="(movimiento, index) in movimientos"
               :key="index"
-              class="flex min-w-0 items-center justify-between gap-3 border-b border-slate-100 pb-4 last:border-0"
+              class="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3"
             >
               <div
                 class="flex min-w-0 items-center gap-3"
               >
                 <!-- Icono del movimiento -->
                 <div
-                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg sm:h-11 sm:w-11"
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg font-bold sm:h-11 sm:w-11"
                   :class="
                     movimiento.tipo === 'ingreso'
-                      ? 'bg-emerald-100'
-                      : 'bg-rose-100'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-rose-100 text-rose-700'
                   "
                 >
                   {{
@@ -262,7 +286,7 @@ const movimientos = [
 
               <!-- Monto -->
               <p
-                class="shrink-0 text-sm font-bold sm:text-base"
+                class="shrink-0 text-sm font-black sm:text-base"
                 :class="
                   movimiento.tipo === 'ingreso'
                     ? 'text-emerald-600'
@@ -276,6 +300,35 @@ const movimientos = [
         </div>
       </section>
 
+      <section
+        class="mt-6 grid gap-4 sm:mt-8 sm:gap-6 xl:grid-cols-3  items-center"
+      >
+        <div
+          class="min-w-0 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6 xl:col-span-2"
+        >
+          <div
+            class=" flex items-center justify-center gap-3"
+          >
+            <h3
+              class="text-lg font-bold text-slate-900 sm:text-xl"
+            >
+              Reportes
+            </h3>
+
+            <button
+              class="shrink-0 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+              @click="$router.push('/reportes')"
+            >
+              Ver todos
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Contenido de los reportes -->
+          </div>
+        </div>
+      </section>
+
       <!-- Footer -->
       <footer
         class="mt-8 pb-4 text-center text-sm text-slate-400 sm:mt-10"
@@ -284,7 +337,6 @@ const movimientos = [
       </footer>
     </main>
 
-    <!-- Navegación inferior móvil -->
-
+ 
   </div>
 </template>

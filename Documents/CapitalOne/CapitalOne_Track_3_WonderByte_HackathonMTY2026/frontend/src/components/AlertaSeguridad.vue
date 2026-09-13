@@ -1,33 +1,31 @@
-
 <script setup>
-import { ref } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
+import { useAlertaSeguridad } from '@/composables/useAlertaSeguridad'
 
-const respuesta = ref(null)
-const alertaVisible = ref(true)
+const {
+  alertaVisible,
+  respuesta,
+  transaccion,
+  iniciarPolling,
+  detenerPolling,
+  responder,
+  cerrarAlerta
+} = useAlertaSeguridad()
 
-const transaccion = {
-  comercio: 'Compra en línea',
-  monto: '$3,850.00 MXN',
-  fecha: '12 de septiembre de 2026, 12:45 PM',
-  tarjeta: '•••• 4582',
-  ubicacion: 'Ciudad de México, México',
-  dispositivo: 'Chrome en Windows'
-}
+onMounted(() => {
+  iniciarPolling(15000) // cada 15 segundos, ajusta según necesites
+})
 
-function cerrarAlerta() {
-  alertaVisible.value = false
-}
-
-function responder(valor) {
-  respuesta.value = valor
-}
+onUnmounted(() => {
+  detenerPolling()
+})
 </script>
 
 <template>
   <!-- Fondo de pantalla completa -->
   <div
-    v-if="alertaVisible"
-    class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-950/80 p-4"
+    v-if="alertaVisible && transaccion"
+    class="fixed inset-0 z-[99999] flex items-center justify-center overflow-y-auto bg-slate-950/80 p-4"
   >
     <!-- Contenedor de la alerta -->
     <div
@@ -207,12 +205,11 @@ function responder(valor) {
           </div>
 
           <h2 class="mt-4 text-2xl font-bold text-rose-700">
-            Reportar transacción
+            Transacción Reportada
           </h2>
 
           <p class="mt-3 text-slate-600">
-            No reconoces esta operación. Revisa tu cuenta y contacta
-            al banco para recibir ayuda.
+            Revisa tu cuenta y contacta al banco para recibir ayuda y si necesitas asistencia adicional.
           </p>
 
           <div
